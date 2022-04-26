@@ -3,7 +3,7 @@ package edu.touro.cs.mcon364;
 import java.util.Random;
 
 public class Main {
-
+    static IMultithreading multithreading = new Multithreading();
 
     /**
      * Write a program that times the amount of time it takes to add a random list of int’s in the range 1-100. The size
@@ -15,33 +15,34 @@ public class Main {
     private static int timeListSum(int[] list, int threads) {
         Stopwatch timer = new Stopwatch();
         timer.start();
-        Multithreading.listSum(list, threads);
+        multithreading.listSum(list, threads);
         return timer.stop();
     }
 
     public static void main(String[] args) {
-        final int NUM_TRIALS = 100;
+        final int NUM_TRIALS = 1_000;
 
         int[] threadNumbers = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
         int[] totalTimes = new int[threadNumbers.length];
 
+        Random rand = new Random();
+        final int[] NUMBERS_TO_SUM = new int[100_000_000];
+        for (int j = 0; j < 100_000_000; j++) {
+            NUMBERS_TO_SUM[j] = rand.nextInt(100) + 1;
+        }
+
+        // run multiple times to account for outliers
         for (int i = 0; i < NUM_TRIALS; i++) {
-            Random rand = new Random();
-
-            int[] numbersToSum = new int[100_000_000];
-            for (int j = 0; j < 100_000_000; j++) {
-                numbersToSum[j] = rand.nextInt(100) + 1;
-            }
-
             for (int j = 0; j < threadNumbers.length; j++) {
-                totalTimes[j] += timeListSum(numbersToSum, threadNumbers[j]);
+                totalTimes[j] += timeListSum(NUMBERS_TO_SUM, threadNumbers[j]);
             }
         }
 
+        // get average
         int lowestTimeIndex = 0;
-        long lowestTime = ((long) totalTimes[0]) / NUM_TRIALS;
+        double lowestTime = ((double) totalTimes[0]) / NUM_TRIALS;
         for (int i = 1; i < threadNumbers.length; i++) {
-            if (Math.min(lowestTime, ((long) totalTimes[i]) / NUM_TRIALS) == ((long) totalTimes[i]) / NUM_TRIALS) {
+            if (Math.min(lowestTime, ((double) totalTimes[i]) / NUM_TRIALS) == ((double) totalTimes[i]) / NUM_TRIALS) {
                 lowestTimeIndex = i;
             }
         }
