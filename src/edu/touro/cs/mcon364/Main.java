@@ -4,7 +4,6 @@ import java.util.Random;
 
 public class Main {
     static IMultithreading multithreading = new Multithreading();
-    static final int[] threadNumbers = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
 
     /**
      * Write a program that times the amount of time it takes to add a random list of int’s in the range 1-100. The size
@@ -23,6 +22,7 @@ public class Main {
     public static void main(String[] args) {
         final int NUM_TRIALS = 1_000;
 
+        int[] threadNumbers = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
         int[] totalTimes = new int[threadNumbers.length];
 
         Random rand = new Random();

@@ -1,12 +1,15 @@
 package edu.touro.cs.mcon364;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MultithreadedAddTest {
-    @Test
-    void sum() {
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024})
+    void sum(int numberOfThreads) {
         final int N = 10_000;
         int[] numbersToSum = new int[N];
 
@@ -16,8 +19,6 @@ public class MultithreadedAddTest {
 
         IMultithreading multithreading = new Multithreading();
 
-        for (int numberOfThreads : Main.threadNumbers) {
-            assertEquals((N * (N + 1)) / 2, multithreading.listSum(numbersToSum, numberOfThreads));
-        }
+        assertEquals((N * (N + 1)) / 2, multithreading.listSum(numbersToSum, numberOfThreads));
     }
 }
