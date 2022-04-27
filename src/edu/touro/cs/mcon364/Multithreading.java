@@ -1,61 +1,51 @@
 package edu.touro.cs.mcon364;
 
-import java.util.concurrent.*;
-
-public class Multithreading {
+public class Multithreading implements IMultithreading {
     private static int[] numbersToSum;
     private static int numThreads;
 
-    /**
-     * Sums a list of integers.
-     *
-     * @param list    a list of integers to sum
-     * @param threads the number of threads among which the list is divided evenly
-     * @return the sum of the items in the list
-     */
-    public static long listSum(int[] list, int threads) {
+    public long listSum(int[] list, int threads) {
         numbersToSum = list;
         numThreads = threads;
 
-        ExecutorService nest = Executors.newFixedThreadPool(threads);
-        Future<Integer>[] subSums = new Future[threads];
+        Adder[] nest = new Adder[threads];
 
         for (int i = 0; i < threads; i++) {
-            subSums[i] = nest.submit(new Adder(i));
+            nest[i] = new Adder(i);
+            nest[i].start();
         }
 
         int total = 0;
 
         try {
-            nest.shutdown();
-            if (nest.awaitTermination(10, TimeUnit.SECONDS)) {
-                for (Future<Integer> subSum : subSums) {
-                    total += subSum.get();
-                }
-            } else {
-                throw new TimeoutException("The execution did not complete.");
+            for (Adder a : nest) {
+                a.join();
+                total += a.getSum();
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         return total;
     }
 
-    private static class Adder implements Callable<Integer> {
+    private static class Adder extends Thread {
         private final int STARTING_INDEX;
+        private int sum = 0;
 
         public Adder(int i) {
             STARTING_INDEX = i;
         }
 
+        public int getSum() {
+            return sum;
+        }
+
         @Override
-        public Integer call() {
-            int sum = 0;
+        public void run() {
             for (int i = STARTING_INDEX; i < numbersToSum.length; i += numThreads) {
                 sum += numbersToSum[i];
             }
-            return sum;
         }
     }
 }
