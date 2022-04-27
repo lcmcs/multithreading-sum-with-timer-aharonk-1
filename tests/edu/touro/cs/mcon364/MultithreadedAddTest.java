@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MultithreadedAddTest {
+    static IMultithreading multithreading = new Multithreading();
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024})
@@ -16,8 +17,6 @@ public class MultithreadedAddTest {
         for (int i = 0; i < N; i++) {
             numbersToSum[i] = i+1;
         }
-
-        IMultithreading multithreading = new Multithreading();
 
         assertEquals((N * (N + 1)) / 2, multithreading.listSum(numbersToSum, numberOfThreads));
     }
